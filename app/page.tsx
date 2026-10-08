@@ -5,12 +5,7 @@ import { JobStep } from "@/components/JobStep";
 import { ResumeStep } from "@/components/ResumeStep";
 import { ResultsPanel } from "@/components/ResultsPanel";
 import { ResumePreview } from "@/components/ResumePreview";
-import { applyPatch } from "@/lib/resume/applyPatch";
-import type {
-  AnalysisResult,
-  ResumeSuggestion,
-  SuggestionState,
-} from "@/lib/types/analysis";
+import type { AnalysisResult } from "@/lib/types/analysis";
 
 const MIN_JOB = 80;
 
@@ -30,13 +25,6 @@ export default function Home() {
   const [loadingAnalyze, setLoadingAnalyze] = useState(false);
   const [analyzeError, setAnalyzeError] = useState<string | null>(null);
 
-  const [suggestionStates, setSuggestionStates] = useState<
-    Record<string, SuggestionState>
-  >({});
-  const [undoStack, setUndoStack] = useState<
-    { text: string; suggestionId: string }[]
-  >([]);
-  const [activeTab, setActiveTab] = useState<"prep" | "resume">("prep");
   const [downloading, setDownloading] = useState<"docx" | "pdf" | null>(null);
 
   const fetchJob = useCallback(async () => {
@@ -80,8 +68,6 @@ export default function Home() {
       }
       setResumeText(data.text);
       setWorkingText(data.text);
-      setSuggestionStates({});
-      setUndoStack([]);
       setAnalysis(null);
       setAnalyzeError(null);
     } catch {
@@ -106,55 +92,13 @@ export default function Home() {
         return;
       }
       setAnalysis(data as AnalysisResult);
-      const initial: Record<string, SuggestionState> = {};
-      for (const s of (data as AnalysisResult).suggestions) {
-        initial[s.id] = "pending";
-      }
-      setSuggestionStates(initial);
       setWorkingText(resumeText);
-      setUndoStack([]);
-      setActiveTab("prep");
     } catch {
       setAnalyzeError("Analysis request failed.");
     } finally {
       setLoadingAnalyze(false);
     }
   }, [jobText, resumeText]);
-
-  const onAccept = useCallback(
-    (s: ResumeSuggestion) => {
-      const result = applyPatch(workingText, s.patch);
-      if (!result.ok) {
-        setAnalyzeError(result.error);
-        return;
-      }
-      setUndoStack((stack) => [
-        ...stack.slice(-9),
-        { text: workingText, suggestionId: s.id },
-      ]);
-      setWorkingText(result.text);
-      setSuggestionStates((prev) => ({ ...prev, [s.id]: "accepted" }));
-      setAnalyzeError(null);
-    },
-    [workingText]
-  );
-
-  const onSkip = useCallback((id: string) => {
-    setSuggestionStates((prev) => ({ ...prev, [id]: "skipped" }));
-  }, []);
-
-  const onUndo = useCallback(() => {
-    setUndoStack((stack) => {
-      if (stack.length === 0) return stack;
-      const last = stack[stack.length - 1];
-      setWorkingText(last.text);
-      setSuggestionStates((prev) => ({
-        ...prev,
-        [last.suggestionId]: "pending",
-      }));
-      return stack.slice(0, -1);
-    });
-  }, []);
 
   const onDownload = useCallback(
     async (format: "docx" | "pdf") => {
@@ -198,8 +142,8 @@ export default function Home() {
           Job Description Reader & Resume Coach
         </h1>
         <p className="mt-2 max-w-2xl text-slate-600">
-          Read a LinkedIn job posting, see what to prepare, review resume suggestions,
-          apply them one at a time, and download an updated resume.
+          Read a LinkedIn job posting, see what to prepare, get course and
+          portfolio project ideas, and download your resume as DOCX or PDF.
         </p>
       </header>
 
@@ -247,21 +191,12 @@ export default function Home() {
           )}
 
           {analysis && (
-            <ResultsPanel
-              analysis={analysis}
-              suggestionStates={suggestionStates}
-              onAccept={onAccept}
-              onSkip={onSkip}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-            />
+            <ResultsPanel analysis={analysis} />
           )}
         </div>
 
         <ResumePreview
           workingText={workingText}
-          onUndo={onUndo}
-          canUndo={undoStack.length > 0}
           onDownload={onDownload}
           downloading={downloading}
         />

@@ -35,16 +35,32 @@ export type ResumeSuggestion = {
   patch: ResumePatch;
 };
 
+export type CourseSuggestion = {
+  title: string;
+  provider: string;
+  focus: string;
+  url: string;
+};
+
+export type ProjectSuggestion = {
+  title: string;
+  why: string;
+  deliverables: string[];
+};
+
 export type JobInsights = {
   requirementBullets: number;
   responsibilityBullets: number;
   termsFromJob: string[];
+  role: string;
 };
 
 export type AnalysisResult = {
   prepTopics: PrepTopic[];
   suggestions: ResumeSuggestion[];
   jobInsights: JobInsights;
+  courses: CourseSuggestion[];
+  projects: ProjectSuggestion[];
 };
 
 export type SuggestionState = "pending" | "accepted" | "skipped";

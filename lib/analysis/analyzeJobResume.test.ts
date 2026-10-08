@@ -24,6 +24,9 @@ describe("analyzeJobResume", () => {
       )
     ).toBe(true);
     expect(result.prepTopics.every((t) => t.subtopics.length > 0)).toBe(true);
+    expect(result.courses.length).toBeGreaterThan(0);
+    expect(result.projects.length).toBeGreaterThan(0);
+    expect(result.projects[0].deliverables.length).toBeGreaterThan(0);
   });
 
   it("includes role-specific scenarios from responsibilities", () => {

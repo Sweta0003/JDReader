@@ -2,7 +2,11 @@ import {
   buildJobUnderstanding,
   missingTermsForResume,
 } from "@/lib/analysis/mergeJobTerms";
-import { buildPrepCurriculum } from "@/lib/analysis/prepCurriculum";
+import { buildGrowthSuggestions } from "@/lib/analysis/growthSuggestions";
+import {
+  buildPrepCurriculum,
+  detectJobRole,
+} from "@/lib/analysis/prepCurriculum";
 import type {
   AnalysisResult,
   PrepTopic,
@@ -133,6 +137,8 @@ export function analyzeJobResume(
   }
 
   const suggestions = buildSuggestions(missing, resumeText);
+  const role = detectJobRole(normalizedJob);
+  const { courses, projects } = buildGrowthSuggestions(normalizedJob, role);
 
   if (
     prepTopics.length === 0 &&
@@ -181,6 +187,8 @@ export function analyzeJobResume(
   return {
     prepTopics: prepTopics.slice(0, 18),
     suggestions,
-    jobInsights: insights,
+    jobInsights: { ...insights, role },
+    courses,
+    projects,
   };
 }

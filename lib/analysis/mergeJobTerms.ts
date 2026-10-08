@@ -79,6 +79,7 @@ export function buildJobUnderstanding(rawJobText: string): {
       requirementBullets: sections.requirements.length,
       responsibilityBullets: sections.responsibilities.length,
       termsFromJob,
+      role: "general",
     },
   };
 }

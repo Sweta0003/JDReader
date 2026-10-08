@@ -2,36 +2,24 @@
 
 type Props = {
   workingText: string;
-  onUndo: () => void;
-  canUndo: boolean;
   onDownload: (format: "docx" | "pdf") => void;
   downloading: "docx" | "pdf" | null;
 };
 
 export function ResumePreview({
   workingText,
-  onUndo,
-  canUndo,
   onDownload,
   downloading,
 }: Props) {
   return (
     <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:sticky lg:top-6">
-      <h2 className="text-lg font-semibold text-slate-900">Live resume preview</h2>
+      <h2 className="text-lg font-semibold text-slate-900">Resume preview</h2>
       <p className="mt-1 text-xs text-slate-500">
-        Accepted changes apply here in order. Export uses this text (clean layout, not
-        a pixel-perfect copy of your upload).
+        Export uses this extracted text (clean layout, not a pixel-perfect copy of
+        your upload).
       </p>
 
       <div className="mt-3 flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={onUndo}
-          disabled={!canUndo}
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40"
-        >
-          Undo last accept
-        </button>
         <button
           type="button"
           onClick={() => onDownload("docx")}
@@ -51,7 +39,7 @@ export function ResumePreview({
       </div>
 
       <pre className="mt-4 max-h-[32rem] overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-4 text-xs leading-relaxed text-slate-800 whitespace-pre-wrap">
-        {workingText || "(Upload a resume and accept suggestions to build preview)"}
+        {workingText || "(Upload a resume to see extracted text)"}
       </pre>
     </section>
   );
