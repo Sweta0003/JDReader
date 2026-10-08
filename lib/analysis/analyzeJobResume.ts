@@ -120,7 +120,7 @@ export function analyzeJobResume(
     resumeText
   );
 
-  let prepTopics: PrepTopic[] = buildPrepCurriculum(
+  const prepTopics: PrepTopic[] = buildPrepCurriculum(
     normalizedJob,
     resumeText
   );

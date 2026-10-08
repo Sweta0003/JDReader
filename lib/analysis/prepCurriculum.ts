@@ -467,10 +467,6 @@ const CATALOG: CurriculumNode[] = [
   },
 ];
 
-function includesAny(haystack: string, needles: string[]): boolean {
-  return needles.some((n) => haystack.includes(n.toLowerCase()));
-}
-
 export function detectJobRole(jobText: string): JobRole {
   const t = jobText.toLowerCase();
   const scores: Array<[JobRole, number]> = [];
